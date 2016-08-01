@@ -16,7 +16,7 @@ import redis.clients.jedis.Jedis;
  * Represents the results of a search query.
  *
  */
-public class WikiSearch {
+public class WikiSearch implements Comparable<Map.Entry<String,Integer>>{
 	
 	// map from URLs that contain the term(s) to relevance score
 	private Map<String, Integer> map;
@@ -28,6 +28,15 @@ public class WikiSearch {
 	 */
 	public WikiSearch(Map<String, Integer> map) {
 		this.map = map;
+	}
+
+	/**
+	 * returns  map in WikiSearch
+	 *
+	 *
+	 */
+	public Map<String,Integer> getMap() {
+		return map;
 	}
 	
 	/**
@@ -55,13 +64,30 @@ public class WikiSearch {
 	
 	/**
 	 * Computes the union of two search results.
+	 * Iterates through WikiSearch that and either updates existing key with new relevance score or adds a new entry
 	 * 
 	 * @param that
 	 * @return New WikiSearch object.
 	 */
 	public WikiSearch or(WikiSearch that) {
         // FILL THIS IN!
-		return null;
+        Map<String,Integer> results = map;
+        for (Map.Entry<String,Integer) entry: that.getMap().entrySet()) {
+			String url = entry.getKey();
+			// url exists in both this WikiSearch map and that WikiSearch map
+			if (map.containsKey(url)) {
+        		//update relevance score
+        		int newRelevance = totalRelevance(getRelevance(url), that.getRelevance(url));
+        		results.put(url,newRelevance);
+        	}
+        	// url doesn't exist in this WikiSearch map yet
+        	else {
+        		results.put(url, entry.getValue());
+        	}
+		}
+		WikiSearch resultsWikiSearch = new WikiSearch(results);
+        
+		return resultsWikiSearch;
 	}
 	
 	/**
@@ -72,18 +98,38 @@ public class WikiSearch {
 	 */
 	public WikiSearch and(WikiSearch that) {
         // FILL THIS IN!
-		return null;
+        Map<String,Integer> results = new Map<String,Integer>();
+        for (Map.Entry<String,Integer> entry: that.getMap().entrySet()) {
+			String url = entry.getKey();
+			//url exists in both this WikiSearch map and that WikiSearch map
+			if (containsKey(url)) {
+        		//update relevance score
+        		int newRelevance = totalRelevance(getRelevance(url), that.getRelevance(url));
+        		results.put(url,newRelevance);
+        	}
+		}
+		WikiSearch resultsWikiSearch = new WikiSearch(results);
+		return resultsWikiSearch;
 	}
 	
 	/**
-	 * Computes the intersection of two search results.
+	 * Computes the difference of two search results.
 	 * 
 	 * @param that
 	 * @return New WikiSearch object.
 	 */
 	public WikiSearch minus(WikiSearch that) {
         // FILL THIS IN!
-		return null;
+        Map<String,Integer> results = map;
+        for (Map.Entry<String, Integer> entry: that.getMap().entrySet()) {
+			String url = entry.getKey();
+			//url exists in both this WikiSearch map and that WikiSearch map
+			if (containsKey(url)) {
+        		//delete this url from WikiSearch map
+        		results.remove(url); 
+		}
+		WikiSearch resultsWikiSearch = new WikiSearch(results);
+		return resultsWikiSearch;
 	}
 	
 	/**
@@ -107,6 +153,28 @@ public class WikiSearch {
         // FILL THIS IN!
 		return null;
 	}
+
+	/**
+     * 
+     *
+     *
+     */
+    public int compareTo(Entry<String,Integer> that) {
+        if (this.suit < that.suit) {
+            return -1;
+        }
+        if (this.suit > that.suit) {
+            return 1;
+        }
+        if (this.rank < that.rank) {
+            return -1;
+        }
+        if (this.rank > that.rank) {
+            return 1;
+        }
+        return 0;
+    }
+
 
 	/**
 	 * Performs a search and makes a WikiSearch object.
