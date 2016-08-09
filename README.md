@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+# aliceyli.github.io
+# aliceyli.github.io
+=======
 # cs-application-retrieval-lab
 
 ## Learning goals
@@ -362,3 +366,4 @@ If you get a basic version of this lab working, you might want to work on these 
 *  [Anonymous classes](https://docs.oracle.com/javase/tutorial/java/javaOO/anonymousclasses.html)
 
 <p class='util--hide'>View <a href='https://learn.co/lessons/cs-application-retrieval-lab'>Retrieval Lab</a> on Learn.co and start learning to code for free.</p>
+>>>>>>> dcebdd876a1c482c7de5ad691d5b143a96ab70f8

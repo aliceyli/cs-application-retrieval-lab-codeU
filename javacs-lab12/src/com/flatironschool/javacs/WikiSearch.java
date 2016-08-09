@@ -16,7 +16,7 @@ import redis.clients.jedis.Jedis;
  * Represents the results of a search query.
  *
  */
-public class WikiSearch implements Comparable<Map.Entry<String,Integer>>{
+public class WikiSearch {
 	
 	// map from URLs that contain the term(s) to relevance score
 	private Map<String, Integer> map;
@@ -72,7 +72,7 @@ public class WikiSearch implements Comparable<Map.Entry<String,Integer>>{
 	public WikiSearch or(WikiSearch that) {
         // FILL THIS IN!
         Map<String,Integer> results = map;
-        for (Map.Entry<String,Integer) entry: that.getMap().entrySet()) {
+        for (Map.Entry<String,Integer> entry: that.getMap().entrySet()) {
 			String url = entry.getKey();
 			// url exists in both this WikiSearch map and that WikiSearch map
 			if (map.containsKey(url)) {
@@ -98,11 +98,11 @@ public class WikiSearch implements Comparable<Map.Entry<String,Integer>>{
 	 */
 	public WikiSearch and(WikiSearch that) {
         // FILL THIS IN!
-        Map<String,Integer> results = new Map<String,Integer>();
+        Map<String,Integer> results = new HashMap<String,Integer>();
         for (Map.Entry<String,Integer> entry: that.getMap().entrySet()) {
 			String url = entry.getKey();
 			//url exists in both this WikiSearch map and that WikiSearch map
-			if (containsKey(url)) {
+			if (map.containsKey(url)) {
         		//update relevance score
         		int newRelevance = totalRelevance(getRelevance(url), that.getRelevance(url));
         		results.put(url,newRelevance);
@@ -124,9 +124,10 @@ public class WikiSearch implements Comparable<Map.Entry<String,Integer>>{
         for (Map.Entry<String, Integer> entry: that.getMap().entrySet()) {
 			String url = entry.getKey();
 			//url exists in both this WikiSearch map and that WikiSearch map
-			if (containsKey(url)) {
+			if (map.containsKey(url)) {
         		//delete this url from WikiSearch map
         		results.remove(url); 
+        	}
 		}
 		WikiSearch resultsWikiSearch = new WikiSearch(results);
 		return resultsWikiSearch;
@@ -151,29 +152,23 @@ public class WikiSearch implements Comparable<Map.Entry<String,Integer>>{
 	 */
 	public List<Entry<String, Integer>> sort() {
         // FILL THIS IN!
-		return null;
-	}
+        List<Entry<String, Integer>> entryList = new LinkedList<Entry<String, Integer>>(map.entrySet());
+        Comparator<Entry<String,Integer>> entryComparator = new Comparator<Entry<String,Integer>>() {
 
-	/**
-     * 
-     *
-     *
-     */
-    public int compareTo(Entry<String,Integer> that) {
-        if (this.suit < that.suit) {
-            return -1;
-        }
-        if (this.suit > that.suit) {
-            return 1;
-        }
-        if (this.rank < that.rank) {
-            return -1;
-        }
-        if (this.rank > that.rank) {
-            return 1;
-        }
-        return 0;
-    }
+		    public int compare(Entry<String,Integer> entry1, Entry<String,Integer> entry2) {
+		       	if (entry1.getValue() < entry2.getValue()) {
+		            return -1;
+		        }
+		        if (entry1.getValue() > entry2.getValue()) {
+		            return 1;
+		        }
+		        
+		        return 0;
+	   		}
+		};
+        Collections.sort(entryList, entryComparator);
+		return entryList;
+	}
 
 
 	/**
